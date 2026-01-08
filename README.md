@@ -1,61 +1,47 @@
-Isolasi Layanan Menggunakan Docker
+# Customer Service Order Service (Docker)
 
-Dockerfile
+Dokumentasi singkat untuk menjalankan service ini menggunakan Docker.
 
-Docker digunakan untuk mengisolasi microservice agar berjalan independen dari sistem host. Dockerfile digunakan untuk membangun image aplikasi.
+## Prasyarat
 
-Contoh Dockerfile:
+- Docker Desktop (Windows/macOS) atau Docker Engine (Linux)
+- Docker Compose (umumnya sudah termasuk di Docker Desktop)
 
-FROM php:8.1-apache
+## Struktur penting
 
-RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install intl pdo pdo_mysql
+- `Dockerfile` menggunakan `php:8.1-apache` dan mengatur `DocumentRoot` ke folder `public/`
+- `docker-compose.yml` melakukan build image dari source dan expose port `8050` (host) ke `80` (container)
 
-WORKDIR /var/www/html
+## Menjalankan dengan Docker Compose
 
-COPY . /var/www/html
+1) Pastikan kamu berada di root project (folder ini)
 
-RUN chown -R www-data:www-data /var/www/html/writable
+2) Build & start container
 
-EXPOSE 80
+```bash
+# Compose v2 (disarankan)
+docker compose up -d --build
 
+# atau Compose v1
+docker-compose up -d --build
+```
 
+3) Verifikasi container berjalan
 
+```bash
+docker ps
+```
 
-Docker Compose
-Docker Compose digunakan untuk menjalankan container dengan port mapping agar dapat diakses publik.
+4) Akses service
 
-Contoh docker-compose.yml:
+- Lokal (umum): http://localhost:8050
+- Dari device lain di jaringan: `http://<IP-PC-kamu>:8050`
 
-version: '3.8'
+## Stop / Restart
 
-services:
-  customer_service:
-    image: customer_service
-    container_name: customer_service
-    ports:
-      - "8050:80"
-    restart: always
+```bash
+docker compose down
 
-
-
-Build Docker Image
-Masuk ke direktori project di STB: cd customerservice
-Build image Docker: docker build -t customer_service .
-
-
-Menjalankan Container
-Jalankan container menggunakan Docker Compose: docker-compose up -d
-
-
-Verifikasi Deployment
-Cek container yang sedang berjalan: docker ps
-Output: customer_service   0.0.0.0:8050->80/tcp
-
-
-
-Akses Layanan Secara Publik
-Microservice dapat diakses melalui browser atau tool API client menggunakan alamat: http://192.168.0.154:8050
+# restart
+docker compose up -d
+```
