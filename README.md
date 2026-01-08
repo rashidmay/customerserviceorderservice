@@ -14,7 +14,7 @@ Dokumentasi singkat untuk menjalankan service ini menggunakan Docker.
 
 ## Menjalankan dengan Docker Compose
 
-1) Pastikan kamu berada di root project (folder ini)
+1) Pastikan direktori saat ini berada di root project
 
 2) Build & start container
 
@@ -34,8 +34,7 @@ docker ps
 
 4) Akses service
 
-- Lokal (umum): http://localhost:8050
-- Dari device lain di jaringan: `http://<IP-PC-kamu>:8050`
+- http://192.168.0.154:8050
 
 ## Stop / Restart
 
