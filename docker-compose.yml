@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  customer_service:
+    build: .
+    container_name: customer_service
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    restart: always
