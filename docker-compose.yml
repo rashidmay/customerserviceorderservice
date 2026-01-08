@@ -5,7 +5,7 @@ services:
     build: .
     container_name: customer_service
     ports:
-      - "8080:80"
+      - "8050:80"
     volumes:
       - .:/var/www/html
     restart: always
