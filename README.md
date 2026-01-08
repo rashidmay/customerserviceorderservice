@@ -1,48 +1,61 @@
+Isolasi Layanan Menggunakan Docker
 
-# Customer Service (CodeIgniter 4)
+Dockerfile
 
-## Cara Menjalankan
+Docker digunakan untuk mengisolasi microservice agar berjalan independen dari sistem host. Dockerfile digunakan untuk membangun image aplikasi.
 
-Jalankan development server:
+Contoh Dockerfile:
 
-```bash
-php spark serve --host 127.0.0.1 --port 8080
-```
+FROM php:8.1-apache
 
-Buka aplikasi:
+RUN apt-get update && apt-get install -y \
+    libicu-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install intl pdo pdo_mysql
 
-- http://127.0.0.1:8080
+WORKDIR /var/www/html
 
-## Auth API (Token)
+COPY . /var/www/html
 
-Endpoint di bawah `/api/*` membutuhkan token.
+RUN chown -R www-data:www-data /var/www/html/writable
 
-Token default: `rashidmay` (bisa diubah lewat `.env` dengan `API_TOKEN`).
+EXPOSE 80
 
-Header yang didukung:
 
-- `Authorization: Bearer <token>`
-- atau `X-Api-Token: <token>`
 
-### Contoh Request
 
-Tanpa token (harusnya 401):
+Docker Compose
+Docker Compose digunakan untuk menjalankan container dengan port mapping agar dapat diakses publik.
 
-```bash
-curl.exe -i http://127.0.0.1:8080/api/customers
-```
+Contoh docker-compose.yml:
 
-Dengan token (harusnya 200):
+version: '3.8'
 
-```bash
-curl.exe -i -H "Authorization: Bearer rashidmay" http://127.0.0.1:8080/api/customers
-```
+services:
+  customer_service:
+    image: customer_service
+    container_name: customer_service
+    ports:
+      - "8050:80"
+    restart: always
 
-Ambil detail customer (contoh id=1):
 
-```bash
-curl.exe -i -H "Authorization: Bearer rashidmay" http://127.0.0.1:8080/api/customers/1
-```
 
-Catatan Windows PowerShell: perintah `curl` sering merupakan alias `Invoke-WebRequest`, jadi gunakan `curl.exe` seperti contoh di atas.
+Build Docker Image
+Masuk ke direktori project di STB: cd customerservice
+Build image Docker: docker build -t customer_service .
 
+
+Menjalankan Container
+Jalankan container menggunakan Docker Compose: docker-compose up -d
+
+
+Verifikasi Deployment
+Cek container yang sedang berjalan: docker ps
+Output: customer_service   0.0.0.0:8050->80/tcp
+
+
+
+Akses Layanan Secara Publik
+Microservice dapat diakses melalui browser atau tool API client menggunakan alamat: http://192.168.0.154:8050
